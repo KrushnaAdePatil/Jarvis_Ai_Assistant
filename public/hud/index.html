@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#020608" />
+  <title>J.A.R.V.I.S. — Just A Rather Very Intelligent System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/hud/css/jarvis.css" />
+</head>
+<body>
+
+  <!-- ══════════ J.A.R.V.I.S. HUD ══════════ -->
+  <div id="hud" class="hud" data-mode="jarvis">
+    <div class="hud-bg"></div>
+    <div class="hud-scanlines"></div>
+    <div class="hud-vignette"></div>
+
+    <!-- ── Header ─────────────────────────────────────────────── -->
+    <header class="hud-header">
+      <div class="brand">
+        <div class="brand-reactor reactor-host" data-size="44"></div>
+        <div class="brand-text">
+          <span class="brand-name">J.A.R.V.I.S.</span>
+          <span class="brand-sub">STARK INDUSTRIES OS · v48.2 · PYTHON CORE</span>
+        </div>
+      </div>
+
+      <nav class="mode-tabs" id="modeTabs">
+        <button class="mode-tab active" data-mode="jarvis">J.A.R.V.I.S.</button>
+        <button class="mode-tab" data-mode="friday">F.R.I.D.A.Y.</button>
+        <button class="mode-tab" data-mode="edith">E.D.I.T.H.</button>
+      </nav>
+
+      <div class="header-right">
+        <div class="status-pill st-online" id="statusPill"><span class="status-dot"></span><span id="statusText">BOOTING</span></div>
+        <button class="hbtn" id="wakeBtn" title="Toggle wake-word detection">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
+          WAKE <span id="wakeState">OFF</span>
+        </button>
+        <button class="hbtn on" id="voiceBtn" title="Toggle JARVIS voice">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12h2l2-7 3 14 3-10 2 5 2-2h6"/></svg>
+          VOICE
+        </button>
+        <button class="hbtn" id="archBtn" title="Conversation archives">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11h14V8M10 12h4"/></svg>
+          ARCHIVES
+        </button>
+      </div>
+    </header>
+
+    <!-- ── Main grid ───────────────────────────────────────────── -->
+    <main class="hud-main">
+
+      <!-- Left rail: system vitals -->
+      <aside class="rail-col left">
+        <div class="rail">
+          <div class="panel">
+            <div class="panel-title">SYSTEM VITALS</div>
+            <div class="rail-gauges" id="railGauges"></div>
+            <div class="rail-spark">
+              <div class="spark-row"><span>CPU</span><div class="spark-host" id="cpuSpark" data-w="210" data-h="34"></div></div>
+            </div>
+            <div class="vital-rows">
+              <div class="vital"><span>GPU CORE</span><b id="vGpu">--</b></div>
+              <div class="vital"><span>UPLINK</span><b id="vUp">--</b></div>
+              <div class="vital"><span>POWER CELL</span><b id="vBat">EXTERNAL PSU</b></div>
+              <div class="vital"><span>UPTIME</span><b id="vUptime">--</b></div>
+            </div>
+          </div>
+          <div class="panel dnone" id="timersPanel">
+            <div class="panel-title">ACTIVE TIMERS</div>
+            <div id="timersList"></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center stage -->
+      <section class="stage">
+
+        <!-- JARVIS MODE -->
+        <div id="jarvisStage" class="stage-fill">
+          <div class="stage-reactor">
+            <div class="reactor-frame">
+              <span class="rf-corner tl"></span><span class="rf-corner tr"></span>
+              <span class="rf-corner bl"></span><span class="rf-corner br"></span>
+              <div class="reactor-host" data-size="268" id="stageReactor"></div>
+              <div class="reactor-status st-online" id="reactorStatus"><span class="rs-ring"></span><span id="reactorStatusText">ONLINE</span></div>
+            </div>
+            <div class="stage-wave"><canvas id="waveCanvas" class="waveform"></canvas></div>
+          </div>
+
+          <div class="panel console">
+            <div class="panel-title">COMMUNICATION LOG</div>
+            <div class="chat" id="chat"></div>
+            <form class="cmdline" id="cmdForm" autocomplete="off">
+              <button type="button" class="micbtn" id="micBtn" title="Push to talk">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
+              </button>
+              <input id="cmdInput" placeholder='Type a directive — or say "Jarvis"…' spellcheck="false" />
+              <button type="submit" class="sendbtn" title="Send directive">➤</button>
+            </form>
+          </div>
+
+          <div class="quickdock" id="quickDock">
+            <button class="qbtn" data-cmd="Give me my morning briefing">MORNING BRIEFING</button>
+            <button class="qbtn" data-cmd="What's my system status?">SYSTEM STATUS</button>
+            <button class="qbtn" data-cmd="Run a full security scan">SECURITY SCAN</button>
+            <button class="qbtn" data-cmd="Scan the room">SCAN THE ROOM</button>
+            <button class="qbtn" data-cmd="What's the weather?">WEATHER</button>
+            <button class="qbtn" data-cmd="Read me the headlines">HEADLINES</button>
+            <button class="qbtn" data-cmd="Play some focus music">PLAY MUSIC</button>
+            <button class="qbtn" data-cmd="Tell me a joke">TELL A JOKE</button>
+            <button class="qbtn" data-cmd="Set a timer for 5 minutes">TIMER 5M</button>
+          </div>
+        </div>
+
+        <!-- FRIDAY MODE -->
+        <div id="fridayStage" class="stage-fill dnone">
+          <div class="friday">
+            <div class="friday-head panel">
+              <div>
+                <h3 id="fridayTitle">F.R.I.D.A.Y. — TACTICAL &amp; MONITORING</h3>
+                <span class="friday-sub" id="fridaySub">LINKING…</span>
+              </div>
+              <div class="friday-head-right">
+                <span class="threat-badge th-secure" id="threatBadge">PERIMETER SECURE</span>
+                <button class="qbtn qbtn-amber" id="scanBtn">RUN FULL DIAGNOSTIC</button>
+              </div>
+              <div class="sweepbar dnone" id="sweepbar"><span></span></div>
+            </div>
+
+            <div class="friday-gauges panel">
+              <div class="friday-gauge-row" id="fridayGauges"></div>
+              <div class="friday-sparks">
+                <div class="spark-block"><span class="spark-title">CPU HISTORY</span><div class="spark-host" id="fCpuSpark" data-w="300" data-h="44"></div></div>
+                <div class="spark-block"><span class="spark-title">NETWORK Mbps</span><div class="spark-host" id="fNetSpark" data-w="300" data-h="44"></div></div>
+              </div>
+            </div>
+
+            <div class="friday-grid">
+              <div class="panel friday-procs">
+                <div class="panel-title">PROCESS CONTROL <em class="kill-msg" id="killMsg"></em></div>
+                <table>
+                  <thead><tr><th>PID</th><th>PROCESS</th><th>CPU%</th><th>MEM MB</th><th></th></tr></thead>
+                  <tbody id="procBody"></tbody>
+                </table>
+              </div>
+              <div class="panel friday-alerts">
+                <div class="panel-title">THREAT &amp; EVENT LOG <button class="linkbtn" id="ackAllBtn">ACKNOWLEDGE ALL</button></div>
+                <div class="alert-scroll" id="alertList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- E.D.I.T.H. MODE -->
+        <div id="edithStage" class="stage-fill dnone">
+          <div class="edith">
+            <div class="edith-view panel">
+              <video id="camVideo" class="edith-video" muted playsinline></video>
+              <canvas id="edithCanvas" class="edith-canvas"></canvas>
+              <div class="edith-toolbar">
+                <button class="qbtn" id="opticsBtn">ENABLE LIVE OPTICS</button>
+                <span class="edith-chip" id="opticsChip">SYNTHETIC VIEWPORT</span>
+              </div>
+            </div>
+            <div class="panel edith-log">
+              <div class="panel-title">DETECTION LOG</div>
+              <div class="edith-log-scroll" id="edithLog">
+                <div class="alert-empty">Awaiting optical events… say “Jarvis, scan the room”.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right rail: intel -->
+      <aside class="rail-col right">
+        <div class="rail">
+          <div class="panel clock-panel">
+            <div class="clock-time"><span id="clockHM">--:--</span><span class="clock-sec" id="clockS">--</span></div>
+            <div class="clock-date" id="clockDate">—</div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">ATMOSPHERICS — <span id="wxCity">…</span></div>
+            <div id="wxBody"><div class="alert-empty">Triangulating satellites…</div></div>
+          </div>
+
+          <div class="panel tasks-panel">
+            <div class="panel-title">AGENDA — <span id="taskCount">0</span> OPEN</div>
+            <form class="task-add" id="taskForm">
+              <input id="taskInput" placeholder="New directive…" autocomplete="off" />
+              <button type="submit" aria-label="Add task">+</button>
+            </form>
+            <div class="task-list" id="taskList"></div>
+          </div>
+
+          <div class="panel news-panel">
+            <div class="panel-title">GLOBAL FEED</div>
+            <div class="news-viewport"><div class="news-track" id="newsTrack"></div></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Toasts -->
+    <div class="toasts" id="toasts"></div>
+
+    <!-- Archives drawer -->
+    <div class="drawer-veil dnone" id="drawer">
+      <div class="drawer panel">
+        <div class="panel-title">MEMORY ARCHIVES <button class="linkbtn" id="drawerClose">CLOSE</button></div>
+        <input class="drawer-search" id="drawerSearch" placeholder="Search the archives…" autocomplete="off" />
+        <div class="drawer-scroll" id="drawerList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ Boot overlay ══════════ -->
+  <div class="boot-overlay" id="bootOverlay">
+    <div class="boot-grid"></div>
+
+    <div class="boot-idle" id="bootIdle">
+      <div class="boot-mark reactor-host" data-size="210" data-status="boot"></div>
+      <h1 class="boot-title" id="bootTitle">J.A.R.V.I.S.</h1>
+      <p class="boot-sub" id="bootSub">JUST A RATHER VERY INTELLIGENT SYSTEM</p>
+      <button class="boot-btn" id="bootBtn"><span class="boot-btn-ring"></span>INITIALISE SYSTEMS</button>
+      <p class="boot-hint">AUDIO + VOICE SUBSYSTEMS WILL BE ACTIVATED</p>
+    </div>
+
+    <div class="boot-run dnone" id="bootRun">
+      <div class="boot-reactor lvl-0 reactor-host" data-size="190" data-status="processing" id="bootReactor"></div>
+      <div class="boot-log" id="bootLog"></div>
+      <div class="boot-progress"><div class="boot-progress-bar" id="bootBar"></div></div>
+      <div class="boot-pct" id="bootPct">LOADING CORE MODULES — 0%</div>
+      <div class="boot-online dnone" id="bootOnline">
+        <span class="boot-online-flash">J.A.R.V.I.S. ONLINE</span>
+        <span class="boot-online-sub">ALL SYSTEMS NOMINAL · WELCOME BACK, SIR</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GSAP + SplitText (free since 3.13) — powers the React-Bits-style text FX -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+  <script src="/hud/js/jarvis.js"></script>
+</body>
+</html>

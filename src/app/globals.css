@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+/* Host shell styling (only seen on the 404 page — the HUD itself lives in
+   /public/hud with its own jarvis.css). */
+
+html,
+body {
+  min-height: 100%;
+  background: #010409;
+  color: #d6f1ff;
+  font-family: "Rajdhani", "Segoe UI", sans-serif;
+}
