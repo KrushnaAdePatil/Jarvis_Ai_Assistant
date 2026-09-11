@@ -607,9 +607,9 @@ async function runScan() {
         if (data.threatLevel === "critical") fx.alert();
         addMsg("jarvis", data.summary || "Scan complete.");
         speak(data.summary || "Scan complete.");
-        if (data.threatLevel && data.threatLevel !== "info") toast(`FRIDAY scan: threat level ${String(data.threatLevel).toUpperCase()}`, data.threatLevel);
+        if (data.threatLevel && data.threatLevel !== "info") toast(`Scanning: threat level ${String(data.threatLevel).toUpperCase()}`, data.threatLevel);
     } catch {
-        toast("FRIDAY diagnostic uplink failed", "warning");
+        toast("Diagnostic uplink failed", "warning");
     } finally {
         STATE.scanning = false;
         btn.disabled = false;

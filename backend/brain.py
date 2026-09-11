@@ -14,7 +14,7 @@ from sqlalchemy import select, delete, desc
 
 import personality as P
 from db import (
-    SessionLocal, Conversation, CustomCommand, Todo,
+    SessionLocal, Conversation, CustomCommand, Todo, Memory,
     ensure_seed, get_memory, set_memory,
 )
 from services import get_news, get_weather, get_wiki_summary
@@ -373,11 +373,11 @@ def process_command(raw: str, ctx: dict | None = None) -> Result:
         m = re.match(r"^(?:open|launch|start|fire up)\s+(.+)$", t)
         if m:
             target = re.sub(r"^the ", "", m.group(1)).strip()
-            if re.search(r"friday|tactical", target):
-                return _ok("Switching to FRIDAY tactical view, Sir.", "mode", None,
+            if re.search(r"tactical|system", target):
+                return _ok("Switching to tactical view, Sir.", "mode", None,
                            [{"type": "mode", "mode": "friday"}])
-            if re.search(r"edith|vision", target):
-                return _ok("Bringing E.D.I.T.H. optics online, Sir.", "mode", None,
+            if re.search(r"vision|camera", target):
+                return _ok("Bringing optics online, Sir.", "mode", None,
                            [{"type": "mode", "mode": "edith"}])
             for key, (url, label) in APP_LINKS.items():
                 if key in target:
@@ -387,12 +387,11 @@ def process_command(raw: str, ctx: dict | None = None) -> Result:
             return _ok(f'I don\'t have a registered link for "{target}", {name} — opening a web search as a precaution.',
                        "open_app_miss", None,
                        [{"type": "open_url", "url": f"https://www.google.com/search?q={quote(target)}"}])
-        if re.search(r"\bfriday mode\b|tactical mode|activate friday|switch to friday", t):
-            return _ok("FRIDAY protocol engaged. Telemetry, threat monitoring and process control at your fingertips, Sir.",
+        if re.search(r"\btactical mode\b|activate tactical|switch to tactical", t):
+            return _ok("Tactical protocol engaged. Telemetry, threat monitoring and process control at your fingertips, Sir.",
                        "mode", None, [{"type": "mode", "mode": "friday"}])
-        if re.search(r"\bedith\b|e\.?d\.?i\.?t\.?h|vision mode|activate edith", t):
-            return _ok("E.D.I.T.H. optical systems online — Even Dead, I'm The Hero. Though I intend to be considerably "
-                       "more punctual, Sir.", "mode", "warm",
+        if re.search(r"\bvision mode\b|activate vision|switch to vision", t):
+            return _ok("Optical systems online, Sir.", "mode", "warm",
                        [{"type": "mode", "mode": "edith"}, {"type": "edith_scan"}])
         if re.search(r"jarvis mode|normal mode|assistant mode", t):
             return _ok(f"Resuming standard interface, {name}.", "mode", None,
@@ -414,9 +413,8 @@ def process_command(raw: str, ctx: dict | None = None) -> Result:
                 return _ok(f"{r['message']} {P.pick(P.AFFIRMATIONS)}", "kill_process", "warm")
             return _ok(f"I'm afraid not, {name}. {r['message']}", "kill_process", "serious")
 
-        # ── EDITH vision ─────────────────────────────────────────────────
         if re.search(r"scan the room|vision scan|what do you see|look around|who('| i)s in the room", t):
-            return _ok("Activating E.D.I.T.H. vision mode… camera array online. Running recognition sweeps now, Sir.",
+            return _ok("Activating vision mode… camera array online. Running recognition sweeps now, Sir.",
                        "edith_scan", "serious",
                        [{"type": "mode", "mode": "edith"}, {"type": "edith_scan"}])
 
@@ -442,7 +440,7 @@ def process_command(raw: str, ctx: dict | None = None) -> Result:
         senti = P.sentiment_of(t)
         hints = ("I can report the weather, run system diagnostics, set timers and alarms, manage your tasks, "
                  "fetch news and Wikipedia entries, compute arithmetic, open applications, run security sweeps, "
-                 "or scan the room with E.D.I.T.H.")
+                 "or scan the room.")
         return with_aside(_ok(f"{P.pick(P.CLARIFICATIONS)} {hints}", "fallback",
                               "concerned" if senti == "negative" else "warm"))
 

@@ -180,6 +180,14 @@ async def security_action(req: Request) -> dict:
 
 # ── Standalone hosting of the vanilla HUD ──────────────────────────────────
 
-_HUD_DIR = Path(__file__).resolve().parent.parent / "public" / "hud"
-if _HUD_DIR.exists():
-    app.mount("/", StaticFiles(directory=str(_HUD_DIR), html=True), name="hud")
+_PUBLIC_DIR = Path(__file__).resolve().parent.parent / "public"
+_HUD_DIR = _PUBLIC_DIR / "hud"
+
+if _PUBLIC_DIR.exists():
+    from fastapi.responses import FileResponse
+    
+    @app.get("/")
+    def serve_index():
+        return FileResponse(str(_HUD_DIR / "index.html"))
+        
+    app.mount("/hud", StaticFiles(directory=str(_HUD_DIR)), name="hud")

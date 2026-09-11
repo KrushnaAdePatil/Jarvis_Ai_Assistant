@@ -23,7 +23,7 @@ export async function register() {
   try {
     const { spawn } = await import("node:child_process");
     const child = spawn(
-      "python3",
+      "python",
       ["-m", "uvicorn", "backend.main:app", "--host", "127.0.0.1", "--port", "8777"],
       {
         cwd: process.cwd(),
