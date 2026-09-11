@@ -4,3 +4,6 @@ uvicorn[standard]>=0.29
 sqlalchemy>=2.0
 psycopg2-binary>=2.9
 requests>=2.31
+google-generativeai>=0.4.0
+pint>=0.23
+sympy>=1.12
