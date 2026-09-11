@@ -1,0 +1,34 @@
+remote: error: GH013: Repository rule violations found for refs/heads/main.        
+remote: 
+remote: - GITHUB PUSH PROTECTION        
+remote:   —————————————————————————————————————————        
+remote:     Resolve the following violations before pushing again        
+remote: 
+remote:     - Push cannot contain secrets        
+remote: 
+remote:             
+remote:      (?) Learn how to resolve a blocked push        
+remote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push        
+remote:             
+remote:             
+remote:       —— OpenAI API Key ————————————————————————————————————        
+remote:        locations:        
+remote:          - commit: 9251c8b6b514fad90fcebaea071d8a0bb43a2207        
+remote:            path: .next/dev/cache/turbopack/ee6e79b1/00000002.sst:6806        
+remote:          - commit: 9251c8b6b514fad90fcebaea071d8a0bb43a2207        
+remote:            path: .next/dev/cache/turbopack/ee6e79b1/00000002.sst:7432        
+remote:          - commit: 9251c8b6b514fad90fcebaea071d8a0bb43a2207        
+remote:            path: .next/dev/cache/turbopack/ee6e79b1/00000010.sst:14253        
+remote:          - commit: 9251c8b6b514fad90fcebaea071d8a0bb43a2207        
+remote:            path: .next/dev/cache/turbopack/ee6e79b1/00000019.sst:4345        
+remote:          - commit: d03bb3330904a7aa6fcd6b8599ceb09d09c779c3        
+remote:            path: .next/dev/cache/turbopack/ee6e79b1/00000136.sst:1295        
+remote:             
+remote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.        
+remote:        https://github.com/KrushnaAdePatil/Jarvis_Ai_Assistant/security/secret-scanning/unblock-secret/3JAWwtMWFPriM3gNP1nPrnWOmJE        
+remote:             
+remote: 
+remote: 
+To https://github.com/KrushnaAdePatil/Jarvis_Ai_Assistant.git
+ ! [remote rejected]   main -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/KrushnaAdePatil/Jarvis_Ai_Assistant.git'
