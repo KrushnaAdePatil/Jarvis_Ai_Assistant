@@ -8,7 +8,19 @@ from __future__ import annotations
 import math
 import random
 import re
+import os
 from datetime import datetime, timedelta
+
+try:
+    import google.generativeai as _genai
+    _GEMINI_KEY = os.getenv("GEMINI_API_KEY")
+    if _GEMINI_KEY:
+        _genai.configure(api_key=_GEMINI_KEY)
+        _model = _genai.GenerativeModel('gemini-1.5-flash')
+    else:
+        _model = None
+except ImportError:
+    _model = None
 
 from sqlalchemy import select, delete, desc
 
@@ -438,6 +450,15 @@ def process_command(raw: str, ctx: dict | None = None) -> Result:
 
         # ── Fallback ─────────────────────────────────────────────────────
         senti = P.sentiment_of(t)
+        if _model:
+            try:
+                sys_prompt = "You are J.A.R.V.I.S, Stark's AI assistant. Keep responses brief, witty, and British."
+                res = _model.generate_content(f"{sys_prompt}\nThe user says: '{t}'")
+                if res.text:
+                    return with_aside(_ok(res.text.strip(), "llm_fallback", "warm" if senti == "positive" else "concerned"))
+            except Exception as e:
+                print(f"[JARVIS brain] LLM fallback err: {e}")
+
         hints = ("I can report the weather, run system diagnostics, set timers and alarms, manage your tasks, "
                  "fetch news and Wikipedia entries, compute arithmetic, open applications, run security sweeps, "
                  "or scan the room.")
