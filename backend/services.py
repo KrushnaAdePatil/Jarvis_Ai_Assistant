@@ -6,18 +6,21 @@ hard timeout and a graceful offline fallback so JARVIS never goes silent.
 from __future__ import annotations
 
 import requests
+import time
 
 TIMEOUT = 5
 _HEADERS = {"User-Agent": "JARVIS-Interface/2.0"}
 
 
-def _get(url: str):
-    try:
-        r = requests.get(url, headers=_HEADERS, timeout=TIMEOUT)
-        if r.ok:
-            return r.json()
-    except Exception:
-        pass
+def _get(url: str, retries: int = 2, backoff: float = 0.5):
+    for attempt in range(retries):
+        try:
+            r = requests.get(url, headers=_HEADERS, timeout=TIMEOUT)
+            if r.ok:
+                return r.json()
+        except requests.exceptions.RequestException as e:
+            if attempt < retries - 1:
+                time.sleep(backoff * (attempt + 1))
     return None
 
 
