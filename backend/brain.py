@@ -22,6 +22,13 @@ try:
 except ImportError:
     _model = None
 
+try:
+    from pint import UnitRegistry
+    ureg = UnitRegistry()
+    _pint_enabled = True
+except ImportError:
+    _pint_enabled = False
+
 from sqlalchemy import select, delete, desc
 
 import personality as P
@@ -299,6 +306,15 @@ def process_command(raw: str, ctx: dict | None = None) -> Result:
                     out = v / _FX[fr] * _FX[to]
                     return _ok(f"{v} {fr} converts to approximately {out:.4f} {to}, {name} — indicative rates, naturally.",
                                "convert")
+            
+            if _pint_enabled:
+                try:
+                    q = v * ureg(from_u)
+                    res = q.to(to_u)
+                    return _ok(f"{v} {from_u.strip()} is {res.magnitude:.2f} {to_u.strip()}, {name}.", "convert")
+                except Exception:
+                    pass
+
             for rx, fn in _CONVERSIONS:
                 if rx.search(from_u):
                     out, unit = fn(v)
