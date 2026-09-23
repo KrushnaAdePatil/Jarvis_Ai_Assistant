@@ -29,6 +29,12 @@ try:
 except ImportError:
     _pint_enabled = False
 
+try:
+    import sympy
+    _sympy_enabled = True
+except ImportError:
+    _sympy_enabled = False
+
 from sqlalchemy import select, delete, desc
 
 import personality as P
@@ -125,6 +131,13 @@ def build_briefing(name: str) -> str:
 
 
 def _safe_eval(expr: str):
+    if _sympy_enabled:
+        try:
+            val = sympy.sympify(expr.replace("^", "**").replace("%", "/100"))
+            return float(val) if val.is_real else None
+        except Exception:
+            pass
+    
     cleaned = expr.replace("^", "**").replace("%", "/100")
     if not re.fullmatch(r"[\d\s+\-*/().]+", cleaned):
         return None
